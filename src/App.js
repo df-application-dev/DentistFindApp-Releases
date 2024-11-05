@@ -7,7 +7,7 @@ const URL = {
   production: "https://mobile.dentistfind.com",
   localhost: "http://localhost:3000",
 };
-const mode = "staging";
+const mode = "production";
 function App() {
   const iframeRef = useRef(null);
 
