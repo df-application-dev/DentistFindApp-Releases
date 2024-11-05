@@ -1,15 +1,36 @@
-import logo from "./logo.svg";
 import "./App.css";
+import { useEffect, useRef } from "react";
+const ipcRenderer = window?.ipcRenderer;
 
+const URL = {
+  staging: "https://pwa.dentistfind.com",
+  production: "https://mobile.dentistfind.com",
+  localhost: "http://localhost:3000",
+};
+const mode = "staging";
 function App() {
+  const iframeRef = useRef(null);
+
+  useEffect(() => {
+    // Listen for messages from the iframe
+    window.addEventListener("message", (event) => {
+      if (event.origin !== URL[mode]) return; // Ensure this matches the iframe URL
+      console.log("Message received from iframe:", event.data);
+      ipcRenderer?.send(event.data);
+      // Relay the message to the main process
+    });
+    ipcRenderer?.send("unmaximize-window");
+  }, []);
+
   return (
-    <div style={{ height: "100vh" }}>
+    <div style={{ height: "100vh", overflowY: "hidden" }}>
       <iframe
-        style={{ borderWidth: 0 }}
+        ref={iframeRef}
+        style={{ borderWidth: 0, overflowY: "hidden", borderImageWidth: 0 }}
         title="test"
         height={"100%"}
         width="100%"
-        src="https://mobile.dentistfind.com"
+        src={URL[mode]}
       ></iframe>
     </div>
   );

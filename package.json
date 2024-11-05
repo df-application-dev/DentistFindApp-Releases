@@ -1,21 +1,45 @@
 {
-  "name": "df",
-  "version": "0.1.0",
+  "name": "dfdashboard",
+  "productName": "DentistFind App",
+  "version": "2.3.1",
+  "description": "Desktop app for Dentistfind",
+  "author": "Dentistfind Inc.",
+  "main": "public/electron.js",
   "private": true,
+  "homepage": "./",
+  "build": {
+    "appId": "com.dentistfind.dfdashboard",
+    "productName": "DentistFind App",
+    "win": {
+      "icon": "public/icon.ico",
+      "target": "nsis"
+    },
+    "mac": {
+      "icon": "public/icon.icns"
+    }
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
+    "electron-context-menu": "^3.6.1",
+    "electron-is-dev": "^1.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
+    "wait-on": "^8.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "react-test": "react-scripts test",
+    "react-eject": "react-scripts eject",
+    "electron-build": "electron-builder",
+    "build": "npm run react-build && npm run electron-build",
+    "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3001 && electron .\""
   },
   "eslintConfig": {
     "extends": [
@@ -36,6 +60,7 @@
     ]
   },
   "devDependencies": {
-    "electron": "^33.0.2"
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8"
   }
 }
