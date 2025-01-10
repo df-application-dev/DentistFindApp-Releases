@@ -1,5 +1,6 @@
 import "./App.css";
 import { useEffect, useRef } from "react";
+import AutoUpdater from "./AutoUpdater";
 const ipcRenderer = window?.ipcRenderer;
 
 const URL = {
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <div style={{ height: "100vh", overflowY: "hidden" }}>
+      <AutoUpdater />
       <iframe
         ref={iframeRef}
         style={{ borderWidth: 0, overflowY: "hidden", borderImageWidth: 0 }}

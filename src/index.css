@@ -1,12 +1,10 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Roboto";
-}
-
 body {
-  background-color: #fff;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body::-webkit-scrollbar {
@@ -312,4 +310,53 @@ body::-webkit-scrollbar {
 
 .table-cell:hover {
   background-color: #f0f0f0;
+}
+
+.dfchat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* display: flex; */
+  align-items: start;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 999;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  display: flex;
+}
+
+.dfchat-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dfchat-modal-content {
+  background-color: white;
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+  margin-top: 100px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+  max-width: 400px;
+}
+
+.dfchat-modal-overlay.open .dfchat-modal-content {
+  transform: scale(1);
+}
+
+.dfchat-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }

@@ -1,11 +1,11 @@
 const { app, BrowserWindow, screen, Menu, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
 const contextMenu = require("electron-context-menu");
+const { autoUpdater } = require("electron-updater");
 
 const path = require("path");
 const url = require("url");
 const nativeImage = require("electron").nativeImage;
-
 contextMenu({
   showSaveImageAs: true,
 });
@@ -18,7 +18,7 @@ const iconUrl = url.format({
 const image = nativeImage.createFromPath(iconUrl);
 function createWindow() {
   const gotTheLock = app.requestSingleInstanceLock();
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const { height } = screen.getPrimaryDisplay().workAreaSize;
   const win = new BrowserWindow({
     maxWidth: 471,
     width: 371,
@@ -50,9 +50,6 @@ function createWindow() {
       }
     });
 
-    // Create myWindow, load the rest of the app, etc...
-    // app.on("ready", () => {});
-
     win.loadURL(
       isDev
         ? "http://localhost:3001"
@@ -63,12 +60,63 @@ function createWindow() {
   // win.webContents.openDevTools();
   console.log(BrowserWindow.getAllWindows());
 
+  autoUpdater.checkForUpdates(() => {
+    //custom logic here for check updates and notify
+  });
+
+  autoUpdater.on("update-downloaded", async (info) => {
+    // Prompt the user to install the update
+    win.webContents.send("update-dom", {
+      title: "Update Available",
+      message: `A new update is available for installation. Would you like to restart the app to install the update?`,
+      status: "update-downloaded",
+    });
+
+    autoUpdater.signals.updateDownloaded((update) => {
+      autoUpdater.removeOldInstallers();
+    });
+    // autoUpdater.quitAndInstall(true, true);
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    console.log(`Update available. Current version ${app.getVersion()}`);
+    autoUpdater.downloadUpdate();
+  });
+
+  autoUpdater.on("update-not-available", (info) => {
+    console.log(`No update available. Current version ${app.getVersion()}`);
+  });
+
+  autoUpdater.on("error", (info) => {
+    console.log("error event emmited");
+    console.log(info);
+  });
+
+  ipcMain.on("trigger-download", (event, arg) => {
+    autoUpdater.downloadUpdate();
+    console.log(arg);
+    win.webContents.send("update-dom", {
+      title: "Downloading Update",
+      message: `Now downloading the update..`,
+      status: "update-downloading",
+    });
+  });
+
+  ipcMain.on("trigger-install", (event, arg) => {
+    console.log(arg);
+
+    autoUpdater.quitAndInstall(true, true);
+  });
+
+  ipcMain.on("check-for-updates", (event, arg) => {
+    console.log(arg);
+    autoUpdater.checkForUpdates(() => {
+      //custom logic here for check updates and notify
+    });
+  });
+
   ipcMain.on("maximize-window", (event, arg) => {
     win.setMaximumSize(0, 0);
-    // if (win.isMaximized()) {
-    //   win.unmaximize();
-    // } else win.maximize();
-
     win.maximize();
   });
 
@@ -77,15 +125,6 @@ function createWindow() {
     win.unmaximize();
     win.setSize(471, height);
   });
-
-  // win.on("will-resize", (event, newBounds) => {
-  //   if (newBounds.width > 471) {
-  //     event.preventDefault();
-  //     win.setSize(471, newBounds.height);
-  //   }
-
-  //   win.setSize(newBounds.width, height);
-  // });
 }
 
 // This method will be called when Electron has finished
